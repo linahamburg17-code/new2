@@ -25,11 +25,44 @@
       font-family: Georgia, "Times New Roman", serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top, rgba(236,223,249,0.98), transparent 34%),
-        linear-gradient(180deg, #f7f2fb 0%, #fbfbfe 100%);
+        radial-gradient(circle at 16% 8%, rgba(255,255,255,0.95) 0%, rgba(231,216,246,0.46) 18%, transparent 38%),
+        radial-gradient(circle at 88% 14%, rgba(244,247,255,0.92) 0%, rgba(196,176,222,0.34) 24%, transparent 46%),
+        linear-gradient(135deg, #efe3f8 0%, #d9c1ee 24%, #f8f8fb 42%, #b8bfd1 53%, #f1e8fa 66%, #caa9e8 82%, #fdfdff 100%);
+      background-size: 180% 180%;
+      animation: metallicShift 16s ease-in-out infinite;
       display: flex;
       justify-content: center;
       padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.0) 28%, rgba(255,255,255,0.75) 42%, rgba(202,207,220,0.42) 48%, transparent 62%),
+        repeating-linear-gradient(115deg, rgba(255,255,255,0.22) 0px, rgba(255,255,255,0.22) 1px, transparent 1px, transparent 9px);
+      mix-blend-mode: screen;
+      opacity: 0.62;
+      transform: translateX(-18%);
+      animation: silverGlide 9s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255,255,255,0.62), transparent 34%),
+        radial-gradient(circle at 20% 82%, rgba(214,197,230,0.32), transparent 38%),
+        radial-gradient(circle at 92% 74%, rgba(235,238,246,0.5), transparent 30%);
+      opacity: 0.9;
+      z-index: 0;
     }
     .app {
       width: 100%;
@@ -37,12 +70,15 @@
       display: grid;
       gap: 16px;
       align-content: start;
+      position: relative;
+      z-index: 1;
     }
     .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
+      background:
+        linear-gradient(145deg, rgba(255,255,255,0.86), rgba(244,238,250,0.68) 48%, rgba(231,234,243,0.76));
+      border: 1px solid rgba(255,255,255,0.62);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.82);
+      backdrop-filter: blur(14px);
       border-radius: var(--radius);
       padding: 22px;
     }
@@ -59,6 +95,11 @@
       line-height: 1.05;
       margin-bottom: 12px;
       font-weight: 700;
+      background: linear-gradient(115deg, #4a2850 0%, #8d64a7 34%, #f8fbff 52%, #6d5278 66%, #4a2850 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 10px 26px rgba(117, 82, 136, 0.14);
     }
     .lead {
       color: var(--muted);
@@ -86,14 +127,14 @@
       font-size: 18px;
       font-weight: 700;
       color: #4b2d50;
-      background: linear-gradient(180deg, #f2e4fa 0%, #dbc3ee 100%);
+      background: linear-gradient(135deg, #f8f4fc 0%, #d7b8ec 28%, #f9fbff 48%, #c9cedb 58%, #e8d6f5 78%, #b98edc 100%);
       box-shadow: 0 10px 24px rgba(186, 143, 205, 0.25), inset 0 1px 0 rgba(255,255,255,.55);
       cursor: pointer;
       transition: transform .18s ease, box-shadow .18s ease;
     }
     button:active { transform: translateY(1px) scale(.995); }
     .secondary {
-      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(235,238,247,0.95));
+      background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(235,238,247,0.95) 42%, rgba(214,198,229,0.84));
       color: var(--muted);
       border: 1px solid rgba(188, 157, 202, 0.28);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
@@ -148,6 +189,16 @@
       border-bottom: 1px solid rgba(122, 93, 141, 0.24);
       padding-bottom: 2px;
     }
+
+    @keyframes metallicShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes silverGlide {
+      0%, 100% { transform: translateX(-22%); opacity: 0.48; }
+      50% { transform: translateX(18%); opacity: 0.74; }
+    }
   </style>
 </head>
 <body>
@@ -171,6 +222,14 @@
       <button class="secondary" id="againBtn" type="button">Выбрать другую карту</button>
       <a href="https://t.me/L_Sonnen" class="small" style="display:block;text-decoration:none;color:#7f6a80;text-align:center;">Хочу такой же калькулятор</a>
       
+    </section>
+
+
+    <section class="card-wrap" id="cardWrap" aria-live="polite">
+      <div class="card-image">
+        <img id="cardImg" src="" alt="Вытянутая финансовая карта" />
+      </div>
+      <p class="card-note">Посмотрите на карту спокойно. Не торопите ответ — пусть первая мысль, образ или ощущение проявятся сами.</p>
     </section>
 
     <div class="footer-links">
@@ -231,8 +290,10 @@
       cardWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    drawBtn.addEventListener('click', drawCard);
-    againBtn.addEventListener('click', drawCard);
+    if (drawBtn && againBtn && cardWrap && cardImg) {
+      drawBtn.addEventListener('click', drawCard);
+      againBtn.addEventListener('click', drawCard);
+    }
   </script>
 </body>
 </html>
